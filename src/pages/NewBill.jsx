@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4003'
-const CURRENCIES = ['AUD','USD','THB','SGD','GBP','EUR']
+const CURRENCIES = ['AUD', 'USD', 'THB', 'SGD', 'GBP', 'EUR']
 
 function NewBill() {
   const navigate = useNavigate()
@@ -55,10 +55,8 @@ function NewBill() {
     reader.readAsDataURL(file)
   }
 
-  const subtotal = items.reduce(
-    (s, i) => s + (parseFloat(i.price) || 0), 0
-  )
-  const total = subtotal + parseFloat(tax||0) + parseFloat(tip||0)
+  const subtotal = items.reduce((s, i) => s + (parseFloat(i.price) || 0), 0)
+  const total = subtotal + parseFloat(tax || 0) + parseFloat(tip || 0)
 
   const save = () => {
     if (!title) return alert('Please enter a bill title')
@@ -66,93 +64,53 @@ function NewBill() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, total, tax, tip, currency, items, photo })
-    }).then(() => navigate('/'))
+    }).then(() => navigate("/splitzy/bills"))
   }
 
   return (
-    <div style={{padding:'20px', maxWidth:'800px', margin:'0 auto'}}>
-      <h2>🧾 New Bill</h2>
+    <div className="page">
+      <Link to="/splitzy" className="back-link">← Back</Link>
+      <h2 style={{ marginBottom: 16 }}>🧾 New Bill</h2>
 
-      {/* ── Bill Details ── */}
-      <div style={{background:'white', borderRadius:'12px',
-        padding:'20px', marginBottom:'15px',
-        boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
+      <div className="card">
+        <label className="label">Bill Title</label>
+        <input className="input" value={title} onChange={e => setTitle(e.target.value)}
+          placeholder="e.g. Dinner at Restaurant" style={{ marginBottom: 15 }} />
 
-        <label style={{display:'block', marginBottom:'5px', fontWeight:'bold'}}>
-          Bill Title
-        </label>
-        <input value={title} onChange={e => setTitle(e.target.value)}
-          placeholder="e.g. Dinner at Restaurant"
-          style={{width:'100%', padding:'10px', borderRadius:'8px',
-            border:'1px solid #ddd', fontSize:'16px',
-            boxSizing:'border-box', marginBottom:'15px'}} />
-
-        <div style={{display:'flex', gap:'10px'}}>
-          <div style={{flex:1}}>
-            <label style={{display:'block', marginBottom:'5px', fontWeight:'bold'}}>
-              Currency
-            </label>
-            <select value={currency} onChange={e => setCurrency(e.target.value)}
-              style={{width:'100%', padding:'10px', borderRadius:'8px',
-                border:'1px solid #ddd', fontSize:'16px'}}>
+        <div className="form-row">
+          <div className="field">
+            <label className="label">Currency</label>
+            <select className="input" value={currency} onChange={e => setCurrency(e.target.value)}>
               {CURRENCIES.map(c => <option key={c}>{c}</option>)}
             </select>
           </div>
-          <div style={{flex:1}}>
-            <label style={{display:'block', marginBottom:'5px', fontWeight:'bold'}}>
-              Tax
-            </label>
-            <input type="number" value={tax}
-              onChange={e => setTax(e.target.value)}
-              style={{width:'100%', padding:'10px', borderRadius:'8px',
-                border:'1px solid #ddd', fontSize:'16px',
-                boxSizing:'border-box'}} />
+          <div className="field">
+            <label className="label">Tax</label>
+            <input className="input" type="number" value={tax} onChange={e => setTax(e.target.value)} />
           </div>
-          <div style={{flex:1}}>
-            <label style={{display:'block', marginBottom:'5px', fontWeight:'bold'}}>
-              Tip
-            </label>
-            <input type="number" value={tip}
-              onChange={e => setTip(e.target.value)}
-              style={{width:'100%', padding:'10px', borderRadius:'8px',
-                border:'1px solid #ddd', fontSize:'16px',
-                boxSizing:'border-box'}} />
+          <div className="field">
+            <label className="label">Tip</label>
+            <input className="input" type="number" value={tip} onChange={e => setTip(e.target.value)} />
           </div>
         </div>
       </div>
 
-      {/* ── Items ── */}
-      <h3>Items</h3>
+      <h3 style={{ margin: '18px 0 10px' }}>Items</h3>
       {items.map((item, index) => (
-        <div key={index} style={{background:'white', borderRadius:'12px',
-          padding:'15px', marginBottom:'10px',
-          boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-          <div style={{display:'flex', gap:'10px', marginBottom:'10px'}}>
-            <input placeholder="Item name" value={item.name}
-              onChange={e => updateItem(index, 'name', e.target.value)}
-              style={{flex:2, padding:'8px', borderRadius:'8px',
-                border:'1px solid #ddd'}} />
-            <input placeholder="Price" type="number" value={item.price}
-              onChange={e => updateItem(index, 'price', e.target.value)}
-              style={{flex:1, padding:'8px', borderRadius:'8px',
-                border:'1px solid #ddd'}} />
-            <button onClick={() => removeItem(index)}
-              style={{padding:'8px 12px', background:'#ff4757',
-                color:'white', border:'none', borderRadius:'8px',
-                cursor:'pointer'}}>✕</button>
+        <div key={index} className="card">
+          <div className="item-edit-row">
+            <input className="input" placeholder="Item name" value={item.name}
+              onChange={e => updateItem(index, 'name', e.target.value)} />
+            <input className="input" placeholder="Price" type="number" value={item.price}
+              onChange={e => updateItem(index, 'price', e.target.value)} />
+            <button onClick={() => removeItem(index)} className="btn btn-danger btn-icon">✕</button>
           </div>
 
-          <div style={{fontSize:'13px', color:'#999', marginBottom:'5px'}}>
-            Who shared this item?
-          </div>
-          <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+          <div className="item-meta" style={{ marginBottom: 6 }}>Who shared this item?</div>
+          <div className="pill-group">
             {users.map(u => (
               <button key={u.id} onClick={() => toggleShare(index, u.id)}
-                style={{padding:'5px 12px', borderRadius:'20px',
-                  cursor:'pointer', border:'2px solid #6c63ff',
-                  fontSize:'13px',
-                  background: item.sharedBy.includes(u.id) ? '#6c63ff' : 'white',
-                  color: item.sharedBy.includes(u.id) ? 'white' : '#6c63ff'}}>
+                className={`avatar-pill ${item.sharedBy.includes(u.id) ? 'active' : ''}`}>
                 {u.avatar} {u.name}
               </button>
             ))}
@@ -160,74 +118,31 @@ function NewBill() {
         </div>
       ))}
 
-      <button onClick={addItem}
-        style={{width:'100%', padding:'12px', background:'white',
-          border:'2px dashed #6c63ff', borderRadius:'12px',
-          color:'#6c63ff', cursor:'pointer', fontSize:'16px',
-          marginBottom:'15px'}}>
+      <button onClick={addItem} className="btn btn-outline btn-block" style={{ marginBottom: 15 }}>
         + Add Item
       </button>
 
-      {/* ── Receipt Photo (Optional) ── */}
-      <div style={{background:'white', borderRadius:'12px',
-        padding:'20px', marginBottom:'15px',
-        boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-        <h3 style={{marginTop:0}}>📷 Receipt Photo (Optional)</h3>
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handlePhoto}
-          style={{marginBottom:'10px', width:'100%'}} />
-
+      <div className="card">
+        <h3>📷 Receipt Photo (Optional)</h3>
+        <input type="file" accept="image/*" onChange={handlePhoto} style={{ marginBottom: 10, width: '100%' }} />
         {photo && (
           <div>
-            <img src={photo} alt="Receipt"
-              style={{width:'100%', borderRadius:'8px',
-                maxHeight:'250px', objectFit:'cover',
-                marginBottom:'8px'}} />
-            <button onClick={() => setPhoto(null)}
-              style={{padding:'6px 14px', background:'#ff4757',
-                color:'white', border:'none', borderRadius:'6px',
-                cursor:'pointer', fontSize:'13px'}}>
+            <img src={photo} alt="Receipt" className="thumb" style={{ maxHeight: 250, marginBottom: 8 }} />
+            <button onClick={() => setPhoto(null)} className="btn btn-danger btn-sm">
               ✕ Remove Photo
             </button>
           </div>
         )}
       </div>
 
-      {/* ── Total Summary ── */}
-      <div style={{background:'white', borderRadius:'12px',
-        padding:'15px', marginBottom:'15px',
-        boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-        <div style={{display:'flex', justifyContent:'space-between',
-          marginBottom:'5px'}}>
-          <span>Subtotal:</span>
-          <span>{currency} {subtotal.toFixed(2)}</span>
-        </div>
-        <div style={{display:'flex', justifyContent:'space-between',
-          marginBottom:'5px'}}>
-          <span>Tax:</span>
-          <span>{currency} {parseFloat(tax||0).toFixed(2)}</span>
-        </div>
-        <div style={{display:'flex', justifyContent:'space-between',
-          marginBottom:'5px'}}>
-          <span>Tip:</span>
-          <span>{currency} {parseFloat(tip||0).toFixed(2)}</span>
-        </div>
-        <hr/>
-        <div style={{display:'flex', justifyContent:'space-between',
-          fontWeight:'bold', fontSize:'18px'}}>
-          <span>Total:</span>
-          <span style={{color:'#6c63ff'}}>{currency} {total.toFixed(2)}</span>
-        </div>
+      <div className="card">
+        <div className="summary-line"><span>Subtotal:</span><span>{currency} {subtotal.toFixed(2)}</span></div>
+        <div className="summary-line"><span>Tax:</span><span>{currency} {parseFloat(tax || 0).toFixed(2)}</span></div>
+        <div className="summary-line"><span>Tip:</span><span>{currency} {parseFloat(tip || 0).toFixed(2)}</span></div>
+        <div className="summary-total"><span>Total:</span><span>{currency} {total.toFixed(2)}</span></div>
       </div>
 
-      {/* ── Save Button ── */}
-      <button onClick={save}
-        style={{width:'100%', padding:'15px', background:'#6c63ff',
-          color:'white', border:'none', borderRadius:'12px',
-          fontSize:'18px', cursor:'pointer', fontWeight:'bold'}}>
+      <button onClick={save} className="btn btn-primary btn-block" style={{ padding: 15, fontSize: 17 }}>
         💾 Save Bill
       </button>
     </div>

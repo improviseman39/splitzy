@@ -19,70 +19,49 @@ function Dashboard() {
   }
 
   return (
-    <div style={{padding:'20px', maxWidth:'800px', margin:'0 auto'}}>
-      <div style={{display:'flex', justifyContent:'space-between',
-        alignItems:'center', marginBottom:'20px'}}>
-        <h2 style={{margin:0}}>📋 Recent Bills</h2>
+    <div className="page">
+      <Link to="/splitzy" className="back-link">← Back</Link>
+
+      <div className="page-header">
+        <h2>📋 Recent Bills</h2>
         <Link to="/new">
-          <button style={{padding:'10px 20px', background:'#6c63ff',
-            color:'white', border:'none', borderRadius:'8px',
-            cursor:'pointer', fontSize:'16px'}}>
-            + New Bill
-          </button>
+          <button className="btn btn-primary">+ New Bill</button>
         </Link>
       </div>
 
       {bills.length === 0 ? (
-        <div style={{textAlign:'center', padding:'60px', color:'#999'}}>
-          <div style={{fontSize:'60px'}}>🧾</div>
+        <div className="empty-state">
+          <div className="icon">🧾</div>
           <p>No bills yet — create your first one!</p>
         </div>
       ) : (
         bills.map(b => (
-          <div key={b.id} style={{
-            background:'white', borderRadius:'12px', padding:'15px',
-            marginBottom:'10px', boxShadow:'0 2px 8px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{display:'flex', justifyContent:'space-between',
-              alignItems:'center'}}>
+          <div key={b.id} className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <div>
-                <div style={{fontWeight:'bold', fontSize:'16px'}}>{b.title}</div>
-                <div style={{color:'#999', fontSize:'13px'}}>
+                <div style={{ fontWeight: 700, fontSize: 16 }}>{b.title}</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>
                   {new Date(b.created_at).toLocaleDateString()}
                 </div>
               </div>
-              <span style={{fontWeight:'bold', fontSize:'18px', color:'#6c63ff'}}>
+              <span className="item-price" style={{ fontSize: 18 }}>
                 {b.currency} {parseFloat(b.total).toFixed(2)}
               </span>
             </div>
 
-            {/* Receipt photo thumbnail if exists */}
             {b.photo && (
-              <img src={b.photo} alt="Receipt"
-                style={{width:'100%', maxHeight:'120px', objectFit:'cover',
-                  borderRadius:'8px', marginTop:'10px'}} />
+              <img src={b.photo} alt="Receipt" className="thumb"
+                style={{ maxHeight: 120, marginTop: 12 }} />
             )}
 
-            {/* Action buttons */}
-            <div style={{display:'flex', gap:'8px', marginTop:'10px'}}>
-              <Link to={`/bill/${b.id}`} style={{flex:1}}>
-                <button style={{width:'100%', padding:'8px', background:'#6c63ff',
-                  color:'white', border:'none', borderRadius:'6px',
-                  cursor:'pointer', fontSize:'14px'}}>
-                  👁 View
-                </button>
+            <div className="row-actions">
+              <Link to={`/bill/${b.id}`} style={{ flex: '1 1 90px' }}>
+                <button className="btn btn-primary btn-block">👁 View</button>
               </Link>
-              <Link to={`/edit/${b.id}`} style={{flex:1}}>
-                <button style={{width:'100%', padding:'8px', background:'#2ed573',
-                  color:'white', border:'none', borderRadius:'6px',
-                  cursor:'pointer', fontSize:'14px'}}>
-                  ✏️ Edit
-                </button>
+              <Link to={`/edit/${b.id}`} style={{ flex: '1 1 90px' }}>
+                <button className="btn btn-success btn-block">✏️ Edit</button>
               </Link>
-              <button onClick={() => deleteBill(b.id)}
-                style={{flex:1, padding:'8px', background:'#ff4757',
-                  color:'white', border:'none', borderRadius:'6px',
-                  cursor:'pointer', fontSize:'14px'}}>
+              <button onClick={() => deleteBill(b.id)} className="btn btn-danger">
                 🗑 Delete
               </button>
             </div>

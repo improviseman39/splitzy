@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4003'
-const AVATARS = ['😊','👦','👩','🧑','👨','👱','🧔','👴','👵','🧒']
+const AVATARS = ['😊', '👦', '👩', '🧑', '👨', '👱', '🧔', '👴', '👵', '🧒']
 
 function Friends() {
   const [users, setUsers] = useState([])
@@ -34,73 +35,45 @@ function Friends() {
   }
 
   return (
-    <div style={{padding:'20px', maxWidth:'800px', margin:'0 auto'}}>
-      <h2>👥 Friends</h2>
+    <div className="page">
+      <Link to="/splitzy" className="back-link">← Back</Link>
+      <h2 style={{ marginBottom: 16 }}>👥 Friends</h2>
 
-      <div style={{background:'white', borderRadius:'12px',
-        padding:'20px', marginBottom:'20px',
-        boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-        <h3 style={{marginTop:0}}>Add Friend</h3>
+      <div className="card">
+        <h3>Add Friend</h3>
 
-        <div style={{marginBottom:'10px'}}>
-          <label style={{display:'block', marginBottom:'5px'}}>
-            Pick Avatar
-          </label>
-          <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+        <div style={{ marginBottom: 12 }}>
+          <label className="label">Pick Avatar</label>
+          <div className="pill-group">
             {AVATARS.map(a => (
               <button key={a} onClick={() => setAvatar(a)}
-                style={{fontSize:'24px', padding:'5px', cursor:'pointer',
-                  border: avatar === a
-                    ? '2px solid #6c63ff'
-                    : '2px solid transparent',
-                  borderRadius:'8px', background:'transparent'}}>
+                className={`avatar-pill ${avatar === a ? 'active' : ''}`}
+                style={{ fontSize: 20, padding: '6px 10px' }}>
                 {a}
               </button>
             ))}
           </div>
         </div>
 
-        <input placeholder="Name *" value={name}
-          onChange={e => setName(e.target.value)}
-          style={{width:'100%', padding:'10px', borderRadius:'8px',
-            border:'1px solid #ddd', marginBottom:'10px',
-            boxSizing:'border-box', fontSize:'16px'}} />
+        <input className="input" placeholder="Name *" value={name}
+          onChange={e => setName(e.target.value)} style={{ marginBottom: 10 }} />
 
-        <input placeholder="Email (optional)" value={email}
-          onChange={e => setEmail(e.target.value)}
-          style={{width:'100%', padding:'10px', borderRadius:'8px',
-            border:'1px solid #ddd', marginBottom:'10px',
-            boxSizing:'border-box', fontSize:'16px'}} />
+        <input className="input" placeholder="Email (optional)" value={email}
+          onChange={e => setEmail(e.target.value)} style={{ marginBottom: 10 }} />
 
-        <input placeholder="Phone (optional)" value={phone}
-          onChange={e => setPhone(e.target.value)}
-          style={{width:'100%', padding:'10px', borderRadius:'8px',
-            border:'1px solid #ddd', marginBottom:'10px',
-            boxSizing:'border-box', fontSize:'16px'}} />
+        <input className="input" placeholder="Phone (optional)" value={phone}
+          onChange={e => setPhone(e.target.value)} style={{ marginBottom: 14 }} />
 
-        <button onClick={add}
-          style={{width:'100%', padding:'12px', background:'#6c63ff',
-            color:'white', border:'none', borderRadius:'8px',
-            fontSize:'16px', cursor:'pointer'}}>
-          Add Friend
-        </button>
+        <button onClick={add} className="btn btn-primary btn-block">Add Friend</button>
       </div>
 
       {users.map(u => (
-        <div key={u.id} style={{
-          background:'white', borderRadius:'12px', padding:'15px',
-          marginBottom:'10px', boxShadow:'0 2px 8px rgba(0,0,0,0.1)',
-          display:'flex', alignItems:'center', gap:'15px'
-        }}>
-          <span style={{fontSize:'30px'}}>{u.avatar}</span>
+        <div key={u.id} className="card contact-card">
+          <span className="icon-badge" style={{ fontSize: 22 }}>{u.avatar}</span>
           <div>
-            <div style={{fontWeight:'bold'}}>{u.name}</div>
-            {u.email && (
-              <div style={{color:'#999', fontSize:'13px'}}>✉️ {u.email}</div>
-            )}
-            {u.phone && (
-              <div style={{color:'#999', fontSize:'13px'}}>📞 {u.phone}</div>
-            )}
+            <div style={{ fontWeight: 700 }}>{u.name}</div>
+            {u.email && <div className="contact-meta">✉️ {u.email}</div>}
+            {u.phone && <div className="contact-meta">📞 {u.phone}</div>}
           </div>
         </div>
       ))}

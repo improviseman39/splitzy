@@ -1,32 +1,50 @@
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom'
+import Home from './pages/Home'
+import SplitzyMenu from './pages/SplitzyMenu'
+import HouseholdMenu from './pages/HouseholdMenu'
+import HouseholdExpenses from './pages/HouseholdExpenses'
+import HouseholdForm from './pages/HouseholdForm'
+import TravelMenu from './pages/TravelMenu'
+import TripList from './pages/TripList'
+import TripForm from './pages/TripForm'
+import TripDetail from './pages/TripDetail'
+import TripExpenseForm from './pages/TripExpenseForm'
+import LoansMenu from './pages/LoansMenu'
+import LoanList from './pages/LoanList'
+import LoanForm from './pages/LoanForm'
+import LoanDetail from './pages/LoanDetail'
+import LoanPaymentForm from './pages/LoanPaymentForm'
+import ShoppingMenu from './pages/ShoppingMenu'
+import ShoppingList from './pages/ShoppingList'
+import HomeSupplies from './pages/HomeSupplies'
+import BillsRemindersMenu from './pages/BillsRemindersMenu'
+import ReminderList from './pages/ReminderList'
+import ReminderForm from './pages/ReminderForm'
+import CalendarView from './pages/CalendarView'
+import Reports from './pages/Reports'
 import Dashboard from './pages/Dashboard'
 import NewBill from './pages/NewBill'
 import BillDetail from './pages/BillDetail'
 import EditBill from './pages/EditBill'
 import Friends from './pages/Friends'
+import Login from './pages/Login'
+import Setup2FA from './pages/Setup2FA'
+import Verify2FA from './pages/Verify2FA'
+import Settings from './pages/Settings'
+import { isLoggedIn } from './auth'
 
 function Nav() {
   const location = useLocation()
   const active = (path) => location.pathname === path
+  const items = [
+    { to: '/', label: 'Home', icon: '🏠' },
+    { to: '/settings', label: 'Settings', icon: '⚙️' },
+  ]
   return (
-    <nav style={{
-      background:'#6c63ff', padding:'0',
-      display:'flex', justifyContent:'space-around',
-      position:'fixed', bottom:0, left:0, right:0,
-      boxShadow:'0 -2px 10px rgba(0,0,0,0.1)'
-    }}>
-      {[
-        { to:'/', label:'🏠 Home' },
-        { to:'/new', label:'➕ New Bill' },
-        { to:'/friends', label:'👥 Friends' },
-      ].map(item => (
-        <Link key={item.to} to={item.to} style={{
-          flex:1, textAlign:'center', padding:'12px',
-          color: active(item.to) ? 'white' : 'rgba(255,255,255,0.7)',
-          textDecoration:'none',
-          fontWeight: active(item.to) ? 'bold' : 'normal',
-          borderTop: active(item.to) ? '3px solid white' : '3px solid transparent'
-        }}>
+    <nav className="bottom-nav">
+      {items.map(item => (
+        <Link key={item.to} to={item.to} className={`nav-link ${active(item.to) ? 'active' : ''}`}>
+          <span className="nav-icon">{item.icon}</span>
           {item.label}
         </Link>
       ))}
@@ -34,36 +52,80 @@ function Nav() {
   )
 }
 
+// Wraps every page that requires a logged-in session.
+function ProtectedLayout({ children }) {
+  if (!isLoggedIn()) {
+    return <Navigate to="/login" replace />
+  }
+  return (
+    <div className="app-shell">
+      <div className="header-bar">
+        <h1>💜 Splitzy</h1>
+        <p>Split bills. Keep friends.</p>
+      </div>
+      {children}
+      <Nav />
+    </div>
+  )
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <div style={{
-        minHeight:'100vh',
-        background:'#f5f5f5',
-        paddingBottom:'70px',
-        fontFamily:'Arial, sans-serif'
-      }}>
-        <div style={{
-          background:'#6c63ff', color:'white',
-          padding:'15px 20px', textAlign:'center',
-          boxShadow:'0 2px 10px rgba(0,0,0,0.2)'
-        }}>
-          <h1 style={{margin:0, fontSize:'24px'}}>💜 Splitzy</h1>
-          <p style={{margin:0, fontSize:'12px', opacity:0.8}}>
-            Split bills. Keep friends.
-          </p>
-        </div>
+      <Routes>
+        {/* Public — auth flow */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/setup-2fa" element={<Setup2FA />} />
+        <Route path="/verify-2fa" element={<Verify2FA />} />
 
-        <Routes>
-          <Route path="/"          element={<Dashboard />} />
-          <Route path="/new"       element={<NewBill />} />
-          <Route path="/bill/:id"  element={<BillDetail />} />
-          <Route path="/edit/:id"  element={<EditBill />} />
-          <Route path="/friends"   element={<Friends />} />
-        </Routes>
+        {/* Home + Settings */}
+        <Route path="/" element={<ProtectedLayout><Home /></ProtectedLayout>} />
+        <Route path="/settings" element={<ProtectedLayout><Settings /></ProtectedLayout>} />
 
-        <Nav />
-      </div>
+        {/* Splitzy category */}
+        <Route path="/splitzy" element={<ProtectedLayout><SplitzyMenu /></ProtectedLayout>} />
+        <Route path="/splitzy/bills" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
+        <Route path="/new" element={<ProtectedLayout><NewBill /></ProtectedLayout>} />
+        <Route path="/bill/:id" element={<ProtectedLayout><BillDetail /></ProtectedLayout>} />
+        <Route path="/edit/:id" element={<ProtectedLayout><EditBill /></ProtectedLayout>} />
+        <Route path="/friends" element={<ProtectedLayout><Friends /></ProtectedLayout>} />
+
+        {/* Household category */}
+        <Route path="/household" element={<ProtectedLayout><HouseholdMenu /></ProtectedLayout>} />
+        <Route path="/household/expenses" element={<ProtectedLayout><HouseholdExpenses /></ProtectedLayout>} />
+        <Route path="/household/add" element={<ProtectedLayout><HouseholdForm /></ProtectedLayout>} />
+        <Route path="/household/edit/:id" element={<ProtectedLayout><HouseholdForm /></ProtectedLayout>} />
+
+        {/* Travel category */}
+        <Route path="/travel" element={<ProtectedLayout><TravelMenu /></ProtectedLayout>} />
+        <Route path="/travel/trips" element={<ProtectedLayout><TripList /></ProtectedLayout>} />
+        <Route path="/travel/add" element={<ProtectedLayout><TripForm /></ProtectedLayout>} />
+        <Route path="/travel/trip/:id" element={<ProtectedLayout><TripDetail /></ProtectedLayout>} />
+        <Route path="/travel/trip/:tripId/add" element={<ProtectedLayout><TripExpenseForm /></ProtectedLayout>} />
+        <Route path="/travel/trip/:tripId/edit/:expenseId" element={<ProtectedLayout><TripExpenseForm /></ProtectedLayout>} />
+
+        {/* Loans & Debts category */}
+        <Route path="/loans" element={<ProtectedLayout><LoansMenu /></ProtectedLayout>} />
+        <Route path="/loans/list" element={<ProtectedLayout><LoanList /></ProtectedLayout>} />
+        <Route path="/loans/add" element={<ProtectedLayout><LoanForm /></ProtectedLayout>} />
+        <Route path="/loans/loan/:id" element={<ProtectedLayout><LoanDetail /></ProtectedLayout>} />
+        <Route path="/loans/loan/:id/pay" element={<ProtectedLayout><LoanPaymentForm /></ProtectedLayout>} />
+
+        {/* Shopping category */}
+        <Route path="/shopping" element={<ProtectedLayout><ShoppingMenu /></ProtectedLayout>} />
+        <Route path="/shopping/list" element={<ProtectedLayout><ShoppingList /></ProtectedLayout>} />
+        <Route path="/shopping/supplies" element={<ProtectedLayout><HomeSupplies /></ProtectedLayout>} />
+
+        {/* Bills & Reminders category */}
+        <Route path="/bills-reminders" element={<ProtectedLayout><BillsRemindersMenu /></ProtectedLayout>} />
+        <Route path="/bills-reminders/list" element={<ProtectedLayout><ReminderList /></ProtectedLayout>} />
+        <Route path="/bills-reminders/add" element={<ProtectedLayout><ReminderForm /></ProtectedLayout>} />
+        <Route path="/bills-reminders/edit/:id" element={<ProtectedLayout><ReminderForm /></ProtectedLayout>} />
+        <Route path="/bills-reminders/calendar" element={<ProtectedLayout><CalendarView /></ProtectedLayout>} />
+
+        {/* Reports */}
+        <Route path="/reports" element={<ProtectedLayout><Reports /></ProtectedLayout>} />
+      </Routes>
     </BrowserRouter>
   )
 }

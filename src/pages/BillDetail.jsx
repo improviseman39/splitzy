@@ -17,116 +17,84 @@ function BillDetail() {
       .then(d => setSummary(d))
   }, [id])
 
-  if (!data) return <div style={{padding:'20px'}}>Loading...</div>
+  if (!data) return <div className="page">Loading...</div>
 
   const { bill, items, shares } = data
 
   return (
-    <div style={{padding:'20px', maxWidth:'800px', margin:'0 auto'}}>
-
-      {/* ── Top bar with Back and Edit ── */}
-      <div style={{display:'flex', justifyContent:'space-between',
-        alignItems:'center', marginBottom:'15px'}}>
-        <Link to="/" style={{color:'#6c63ff', textDecoration:'none',
-          fontWeight:'bold'}}>
-          ← Back
-        </Link>
+    <div className="page">
+      <div className="page-header">
+        <Link to="/splitzy/bills" className="link">← Back</Link>
         <Link to={`/edit/${id}`}>
-          <button style={{padding:'8px 16px', background:'#2ed573',
-            color:'white', border:'none', borderRadius:'8px',
-            cursor:'pointer', fontWeight:'bold'}}>
-            ✏️ Edit Bill
-          </button>
+          <button className="btn btn-success">✏️ Edit Bill</button>
         </Link>
       </div>
 
-      <h2 style={{marginTop:0}}>{bill.title}</h2>
+      <h2 style={{ marginBottom: 16 }}>{bill.title}</h2>
 
-      {/* ── Receipt Photo (if exists) ── */}
       {bill.photo && (
-        <div style={{background:'white', borderRadius:'12px',
-          padding:'15px', marginBottom:'15px',
-          boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-          <h3 style={{marginTop:0}}>📷 Receipt Photo</h3>
-          <img src={bill.photo} alt="Receipt"
-            style={{width:'100%', borderRadius:'8px',
-              maxHeight:'300px', objectFit:'cover'}} />
+        <div className="card">
+          <h3>📷 Receipt Photo</h3>
+          <img src={bill.photo} alt="Receipt" className="thumb" style={{ maxHeight: 300 }} />
         </div>
       )}
 
-      {/* ── Items List ── */}
-      <div style={{background:'white', borderRadius:'12px',
-        padding:'20px', marginBottom:'15px',
-        boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-        <h3 style={{marginTop:0}}>🧾 Items</h3>
+      <div className="card">
+        <h3>🧾 Items</h3>
         {items.map(item => {
           const itemShares = shares.filter(s => s.item_id === item.id)
           return (
-            <div key={item.id} style={{
-              display:'flex', justifyContent:'space-between',
-              padding:'10px 0', borderBottom:'1px solid #f0f0f0'
-            }}>
+            <div key={item.id} className="item-row">
               <div>
-                <div style={{fontWeight:'500'}}>{item.name}</div>
-                <div style={{fontSize:'12px', color:'#999', marginTop:'3px'}}>
+                <div className="item-name">{item.name}</div>
+                <div className="item-meta">
                   {itemShares.length > 0
                     ? itemShares.map(s => `${s.avatar} ${s.name}`).join(', ')
                     : 'No one assigned'}
                 </div>
               </div>
-              <div style={{fontWeight:'bold'}}>
+              <div className="item-price">
                 {bill.currency} {parseFloat(item.price).toFixed(2)}
               </div>
             </div>
           )
         })}
 
-        {/* Totals */}
-        <div style={{marginTop:'12px', paddingTop:'12px',
-          borderTop:'2px solid #f0f0f0'}}>
-          <div style={{display:'flex', justifyContent:'space-between',
-            color:'#999', fontSize:'14px', marginBottom:'4px'}}>
+        <div style={{ marginTop: 12, paddingTop: 12, borderTop: '2px solid var(--border)' }}>
+          <div className="summary-line">
             <span>Tax:</span>
             <span>{bill.currency} {parseFloat(bill.tax).toFixed(2)}</span>
           </div>
-          <div style={{display:'flex', justifyContent:'space-between',
-            color:'#999', fontSize:'14px', marginBottom:'8px'}}>
+          <div className="summary-line">
             <span>Tip:</span>
             <span>{bill.currency} {parseFloat(bill.tip).toFixed(2)}</span>
           </div>
-          <div style={{display:'flex', justifyContent:'space-between',
-            fontWeight:'bold', fontSize:'18px', color:'#6c63ff'}}>
+          <div className="summary-total">
             <span>Total:</span>
             <span>{bill.currency} {parseFloat(bill.total).toFixed(2)}</span>
           </div>
         </div>
       </div>
 
-      {/* ── Who Pays What ── */}
-      <h3>💰 Who Pays What</h3>
+      <h3 style={{ margin: '18px 0 12px' }}>💰 Who Pays What</h3>
       {summary.length === 0 ? (
-        <div style={{background:'white', borderRadius:'12px',
-          padding:'20px', textAlign:'center', color:'#999',
-          boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
+        <div className="card empty-state" style={{ padding: 30 }}>
           No one assigned to items yet.
-          <br/>
-          <Link to={`/edit/${id}`} style={{color:'#6c63ff'}}>
-            Edit bill to assign items →
-          </Link>
+          <br />
+          <Link to={`/edit/${id}`} className="link">Edit bill to assign items →</Link>
         </div>
       ) : (
         summary.map(s => (
-          <div key={s.id} style={{
-            background:'white', borderRadius:'12px', padding:'15px',
-            marginBottom:'10px', boxShadow:'0 2px 8px rgba(0,0,0,0.1)',
-            display:'flex', justifyContent:'space-between', alignItems:'center'
+          <div key={s.id} className="card" style={{
+            display: 'flex', justifyContent: 'space-between',
+            alignItems: 'center', flexWrap: 'wrap', gap: 10
           }}>
-            <div style={{fontSize:'20px'}}>{s.avatar} {s.name}</div>
-            <div style={{textAlign:'right'}}>
-              <div style={{fontSize:'22px', fontWeight:'bold', color:'#6c63ff'}}>
+            <div style={{ fontSize: 20 }}>{s.avatar} {s.name}</div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary-dark)' }}>
                 {bill.currency} {s.total}
               </div>
-              <div style={{fontSize:'12px', color:'#999', marginTop:'3px'}}>
+              <div className="item-meta">
                 Items: {s.subtotal} + Tax: {s.tax} + Tip: {s.tip}
               </div>
             </div>
